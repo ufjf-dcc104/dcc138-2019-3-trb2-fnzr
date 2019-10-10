@@ -1,9 +1,10 @@
 import FixedObject from "./FixedObject";
+import Settings from "@Settings";
 
 export default class Block extends FixedObject {
 
-    height = 32;
-    width = 32;
+    height = Settings.BLOCK_HEIGHT;
+    width = Settings.BLOCK_WIDTH;
     color = "grey";    
 
     onExploded() {

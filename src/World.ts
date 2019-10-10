@@ -1,21 +1,23 @@
-import Player from "@Object/Player";
 import Wall from "@Object/Wall";
-import { Map1 } from "@Maps";
 import Block from "@Object/Block";
 import Bomb from "@Object/Bomb";
-import { WorldObject, Position } from "@Object/WorldObject";
-
+import { WorldObject } from "@Object/WorldObject";
+import Scene, { StartScene, GameScene } from "@Scene";
+import Unit from "@Object/Unit";
+import Settings from "@Settings";
+import { Explosion } from "@Object/Explosion";
 class World {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
     lastTime = 0;
     static readonly Instance: World = new World();
-    players: Player[] = []
+    units: Unit[] = []
     walls: Wall[] = []
     blocks: Block[] = []
     bombs: Bomb[] = []
     positions: {[k: string]: WorldObject[]} = {};
-    objects: WorldObject[] = [];
+    objects: WorldObject[] = [];    
+    explosions: Explosion[] = [];
     
     constructor() {
         this.canvas = document.getElementById('cv') as HTMLCanvasElement;
@@ -34,15 +36,19 @@ class World {
         this.clearCanvas();
         //this.context.fillStyle = "green";
         //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.objects.forEach(obj => {            
-            obj.draw();
-            obj.update(delta);
-        })
+        Scene.update(delta);
         requestAnimationFrame(this.update);
     }
 
+    clear() {
+        this.units = []
+        this.positions = {};
+        this.objects= [];  
+    }
+
     start() {
-        this.buildMap(Map1);
+        //Scene.current = new StartScene();
+        Scene.current = new GameScene();
         this.lastTime = performance.now();
         this.update(this.lastTime);
     }
@@ -50,8 +56,8 @@ class World {
     buildMap(map: number[][]) {
         for (let i = 0; i<map.length; i++) {
             for (let j = 0; j<map[i].length;j++) {                
-                const x = 32 * (j);
-                const y = 32 * (i);                
+                const x = Settings.BLOCK_WIDTH * (j);
+                const y = Settings.BLOCK_HEIGHT * (i);                
                 const key = `${j},${i}`;
                 this.positions[key] = []
                 let obj;

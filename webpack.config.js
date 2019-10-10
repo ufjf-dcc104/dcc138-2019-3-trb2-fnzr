@@ -1,5 +1,6 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
@@ -8,10 +9,10 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts$/,
         use: 'ts-loader',
         exclude: /node_modules/
-      }
+      }      
     ]
   },
   devServer: {
@@ -25,7 +26,10 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "index.html"
-    })
+    }),
+    new CopyPlugin([
+      { from: './assets', to: './build/assets' },
+    ]),
   ],
   optimization: {
     splitChunks: {

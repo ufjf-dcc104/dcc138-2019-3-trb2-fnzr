@@ -1,12 +1,9 @@
 import FixedObject from "./FixedObject";
+import Settings from "@Settings";
 
 export default class Wall extends FixedObject {
 
-    height = 32;
-    width = 32;
+    height = Settings.BLOCK_HEIGHT;
+    width = Settings.BLOCK_WIDTH;
     color = "black";
-
-    onExploded() {
-        console.log("Wall exploded");
-    }
 }

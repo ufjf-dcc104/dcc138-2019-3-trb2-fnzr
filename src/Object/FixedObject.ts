@@ -1,5 +1,6 @@
 import World from "@World";
 import { WorldObject, Position } from "./WorldObject";
+import Settings from "@Settings";
 
 export default abstract class FixedObject extends WorldObject {
     position: Position;
@@ -11,6 +12,8 @@ export default abstract class FixedObject extends WorldObject {
 
     draw() {
         super.draw();
-        World.ctx.fillText(`(${this.position.i},${this.position.j})`, this.x + 4, this.screenY + 8);
+        if (Settings.DEBUG) {
+            World.ctx.fillText(`(${this.position.i},${this.position.j})`, this.x + 4, this.screenY + 8);
+        }
     }
 }

@@ -8,8 +8,8 @@ export class Position {
     key: string;
     
     constructor(x: number, y: number) {        
-        this.i = Math.floor(x / 32);
-        this.j = Math.floor(y / 32);
+        this.i = Math.floor(x / Settings.BLOCK_WIDTH);
+        this.j = Math.floor(y / Settings.BLOCK_HEIGHT);
         this.key = `${this.i},${this.j}`;
     }
 
@@ -78,5 +78,5 @@ export abstract class WorldObject {
         }
     }
 
-    abstract onExploded(): void;
+    onExploded() {};
 }

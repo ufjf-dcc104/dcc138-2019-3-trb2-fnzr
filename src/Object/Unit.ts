@@ -3,21 +3,30 @@ import World from "@World";
 import { WorldObject, Position } from "./WorldObject";
 import Bomb from "./Bomb";
 import FixedObject from "./FixedObject";
+import { Sprites } from "@AssetManager";
+import Settings from "@Settings";
 
 export default abstract class Unit extends WorldObject {
 
-    _position!: Position    
+    _position = new Position(0, 0);
     bombs = 1;
     activeBombs = 0;
-    height = 18;
-    width = 18;
+    height = 8;
+    width = 16;
+    name: string;
+    static frameUpdate = 0.16;
+    currentFrame = 0;
+    currentAnimation = "run";
+    lastFrameUpdate = 0;
+    sprites: Sprites = {};
 
-    constructor(x: number, y: number, color: string) {
-        super(x, y)
-        this._position = new Position(x, y);
+    constructor(name: string, x: number, y: number, color: string) {
+        super(Settings.BLOCK_WIDTH * x + Settings.BLOCK_WIDTH / 4, Settings.BLOCK_HEIGHT * x + Settings.BLOCK_HEIGHT / 4);
+        this.position = new Position(this.x, this.y);
         this.color = color
+        this.name = name;
     }
-
+    
     set position(pos: Position) {        
         if (this.position.key == pos.key) return;        
         _.remove(World.positions[this.position.key], this)
@@ -45,7 +54,7 @@ export default abstract class Unit extends WorldObject {
     }
 
     move(delta: number) {
-        if (this.speedY == 0 && this.speedX == 0) {
+        if (!this.isWalking) {
             return;
         }
         const modX = this.speedX * delta;
@@ -63,12 +72,14 @@ export default abstract class Unit extends WorldObject {
     }
 
     onExploded() {
-        console.log("Unit exploded");
+        console.log("Unit exploded");        
+        this.removeFromWorld();
     }
 
     removeFromWorld() {
         super.removeFromWorld();
         _.remove(World.positions[this.position.key], this)
+        _.remove(World.units, this);
     }
 
     dropBomb() {        
@@ -77,8 +88,48 @@ export default abstract class Unit extends WorldObject {
         this.activeBombs++;
     }
 
+    draw() {
+        if (Settings.DEBUG) {
+            super.draw();
+        }
+        else {
+            const sprite = this.sprites[this.currentAnimation][this.currentFrame];
+            World.ctx.drawImage(sprite, this.x -  Settings.BLOCK_WIDTH / 4, this.y - Settings.BLOCK_HEIGHT / 2, sprite.width, sprite.height);
+            //context.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
+        }
+        
+    }
+
+    updateSpriteOrientation() {
+
+    }
+
+    get isWalking() {
+        return this.speedY != 0 || this.speedX != 0;
+    }
+
+    animate(delta: number) {
+        if (this.isWalking) {
+            this.currentAnimation = "run";
+        }
+        else {
+            this.currentAnimation = "idle"
+        }
+        this.lastFrameUpdate += delta;
+        if (this.lastFrameUpdate >= Unit.frameUpdate) {
+            this.lastFrameUpdate = 0;
+            if (this.currentFrame + 1 == this.sprites[this.currentAnimation].length) {
+                this.currentFrame = 0;
+            }
+            else {
+                this.currentFrame++;
+            }
+        }
+    }
+
     update(delta: number) {
         super.update(delta);
         this.move(delta);
+        this.animate(delta);
     }
 }
