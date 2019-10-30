@@ -33,7 +33,7 @@ export default class Scene {
         throw new Error("Base [Scene::leave] should not be called");
     }
 
-    enter() {
+    async enter() {
         throw new Error("Base [Scene::enter] should not be called");
     }
 
@@ -45,7 +45,7 @@ export class StartScene extends Scene {
         Scene.current = new GameScene();
     }
 
-    enter() {
+    async enter() {
         World.canvas.addEventListener('click', this.onCanvasClick);
     }
 
@@ -66,6 +66,8 @@ export class StartScene extends Scene {
 
 export class GameScene extends Scene {
 
+    state = "OFF";
+
     onKeyDown(event: KeyboardEvent) {
         if (event.keyCode in installedControls) {
             installedControls[event.keyCode](true)
@@ -78,25 +80,29 @@ export class GameScene extends Scene {
         }
     }
 
-    enter() {
+    async enter() {
+        this.state = "LOADING";
         World.clear();
         World.buildMap(Map1);
         World.ctx.font = '8pt TimesNewRoman';
         World.ctx.textAlign = 'left';
-        
-        AssetManager.loadExplosion();
-        AssetManager.loadBomb();
 
         const p1 = new Player("Player 1", 1, 1, "green");
         const p2 = new Player("Player 2", 9, 12, "blue");
         AssetManager.loadUnit("WizardFire").then(() => {
             p1.sprites = AssetManager.unitSprites["WizardFire"];
             p1.addToWorld()
-        })
+        }),
         AssetManager.loadUnit("KnightSilver").then(() => {
             p2.sprites = AssetManager.unitSprites["KnightSilver"];
             p2.addToWorld()
-        })        
+        })
+        
+        await Promise.all([
+            AssetManager.loadScene(),
+            AssetManager.loadExplosion(),
+            AssetManager.loadBomb()            
+        ]);
 
         installControls({
             [Button.RIGHT]: "39",
@@ -120,6 +126,7 @@ export class GameScene extends Scene {
 
         document.addEventListener('keydown', this.onKeyDown, false);
         document.addEventListener('keyup', this.onKeyUp, false);
+        this.state = "READY";
     }
 
     leave() {
@@ -128,6 +135,7 @@ export class GameScene extends Scene {
     }
 
     update(delta: number) {
+        if (this.state != "READY") return;
         if (World.units.length <= 1) {
             Scene.current = new GameEndScene()
         }
@@ -148,7 +156,7 @@ export class GameEndScene extends Scene {
         Scene.current = new GameScene();
     }
 
-    enter() {
+    async enter() {
         World.canvas.addEventListener('click', this.onCanvasClick);
     }
 

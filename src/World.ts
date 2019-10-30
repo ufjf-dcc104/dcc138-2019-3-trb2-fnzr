@@ -6,6 +6,7 @@ import Scene, { StartScene, GameScene } from "@Scene";
 import Unit from "@Object/Unit";
 import Settings from "@Settings";
 import { Explosion } from "@Object/Explosion";
+import Ground from "@Object/Ground";
 class World {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
@@ -62,9 +63,11 @@ class World {
                 this.positions[key] = []
                 let obj;
                 switch (map[i][j]) {
+                    case 0:
+                        obj = new Ground(x, y);
+                        break;
                     case 1:
-                        obj = new Block(x, y);
-                        
+                        obj = new Block(x, y);                        
                         break;
                     case 2:
                         obj = new Wall(x, y);

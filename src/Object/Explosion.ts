@@ -8,7 +8,8 @@ interface SpriteArea {
     clipX: number,
     clipY: number,
     clipHeight: number,
-    clipWidth: number
+    clipWidth: number,
+    offsetY: number
 }
 
 export enum ExplosionType {
@@ -30,53 +31,60 @@ export class Explosion {
     static readonly spritesheet = 'assets/explosion.png';
 
     static calculateSpriteSheetPosition(type: ExplosionType): SpriteArea {
-        let clipX, clipY, clipHeight, clipWidth
+        let clipX, clipY, clipHeight, clipWidth, offsetY
         switch (type) {
             case ExplosionType.LEFT:
                 clipX = 0;
                 clipY = 43;
                 clipHeight = 16;
                 clipWidth = 18;
+                offsetY = 0;
                 break;
             case ExplosionType.HORIZONTAL:
                 clipX = 16;
                 clipY = 42;
                 clipHeight = 16;
                 clipWidth = 14;
+                offsetY = 0;
                 break;
             case ExplosionType.RIGHT:
                 clipX = 46;
                 clipY = 42;
                 clipHeight = 16;
                 clipWidth = 14;
+                offsetY = 0;
                 break;
             case ExplosionType.DOWN:
                 clipX = 0;
                 clipY = 0;
                 clipHeight = 12;
                 clipWidth = 12;
+                offsetY = 0;
                 break;
             case ExplosionType.UP:
                 clipX = 0;
                 clipY = 30;
                 clipHeight = 14;
                 clipWidth = 12;
+                offsetY = 0;
                 break;
             case ExplosionType.VERTICAL:
                 clipX = 0;
                 clipY = 14;
                 clipHeight = 12;
                 clipWidth = 12;
+                offsetY = 0;
                 break;
             case ExplosionType.CENTER:
             default:
-                clipX = 30;
-                clipY = 42;
-                clipHeight = 16;
-                clipWidth = 18;
+                clipX = 29;
+                clipY = 44;
+                clipHeight = 18;
+                clipWidth = 16;
+                offsetY = -2;        
                 break;
         }
-        return {clipX, clipY, clipHeight, clipWidth}
+        return {clipX, clipY, clipHeight, clipWidth, offsetY}
 
     }
 
@@ -87,7 +95,7 @@ export class Explosion {
     }
     
     draw() {
-        World.ctx.drawImage(AssetManager.explosionSprite, this.area.clipX, this.area.clipY, this.area.clipWidth, this.area.clipHeight, this.x, this.y, Settings.BLOCK_WIDTH, Settings.BLOCK_HEIGHT);
+        World.ctx.drawImage(AssetManager.explosionSprite, this.area.clipX, this.area.clipY + this.area.offsetY, this.area.clipWidth, this.area.clipHeight, this.x, this.y, Settings.BLOCK_WIDTH, Settings.BLOCK_HEIGHT);
     }
 
     update(delta: number) {

@@ -17,6 +17,7 @@ export default class AssetManager {
     } = {}    
     static explosionSprite: HTMLImageElement;
     static bombSprite: HTMLImageElement;
+    static sceneSpritesheet: HTMLImageElement;
 
     static unitSprite(name: string, key: string, index: number) {
         return this.unitSprites[name][key][index];
@@ -47,6 +48,18 @@ export default class AssetManager {
         return new Promise((resolve) => {
             img.addEventListener("load", () => {
                 this.explosionSprite = img;
+                resolve();
+            })
+        })
+    }
+
+    static async loadScene() {
+        const img = document.createElement('img');
+        img.src = 'assets/trees-and-bushes.png';        
+        return new Promise((resolve) => {
+            img.addEventListener("load", () => {
+                this.sceneSpritesheet = img;
+                resolve();
             })
         })
     }
@@ -57,6 +70,7 @@ export default class AssetManager {
         return new Promise((resolve) => {
             img.addEventListener("load", () => {
                 this.bombSprite = img;
+                resolve();
             })
         })
     }
