@@ -19,11 +19,24 @@ class World {
     positions: {[k: string]: WorldObject[]} = {};
     objects: WorldObject[] = [];    
     explosions: Explosion[] = [];
+
+    createPlayerScoreContainer(name: string) {
+        const sp = document.createElement('span');
+        const el = document.createElement("div");        
+        el.id = name;
+        el.innerHTML = "0";
+        sp.innerHTML = name + ":";
+        sp.style.cssFloat = "left";
+        document.getElementById("score")!.appendChild(sp);
+        document.getElementById("score")!.appendChild(el);
+    }
     
     constructor() {
         this.canvas = document.getElementById('cv') as HTMLCanvasElement;
         this.ctx = this.canvas.getContext("2d")!;
         this.update = this.update.bind(this);
+        this.createPlayerScoreContainer("Player1");
+        this.createPlayerScoreContainer("Player2");
     }
 
     clearCanvas() {
@@ -45,6 +58,7 @@ class World {
         this.units = []
         this.positions = {};
         this.objects= [];  
+        this.explosions = [];
     }
 
     start() {

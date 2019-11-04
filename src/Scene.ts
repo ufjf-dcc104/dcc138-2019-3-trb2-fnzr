@@ -80,6 +80,8 @@ export class GameScene extends Scene {
         }
     }
 
+    
+
     async enter() {
         this.state = "LOADING";
         World.clear();
@@ -87,8 +89,8 @@ export class GameScene extends Scene {
         World.ctx.font = '8pt TimesNewRoman';
         World.ctx.textAlign = 'left';
 
-        const p1 = new Player("Player 1", 1, 1, "green");
-        const p2 = new Player("Player 2", 9, 12, "blue");
+        const p1 = new Player("Player1", 1, 1, "green");
+        const p2 = new Player("Player2", 9, 12, "blue");
         AssetManager.loadUnit("WizardFire").then(() => {
             p1.sprites = AssetManager.unitSprites["WizardFire"];
             p1.addToWorld()
@@ -158,6 +160,12 @@ export class GameEndScene extends Scene {
 
     async enter() {
         World.canvas.addEventListener('click', this.onCanvasClick);
+        if (World.units.length != 0) {
+            const el = document.getElementById(World.units[0].name)!;
+            const score = Number(el.innerHTML);
+            el.innerHTML = String(score + 1);
+        }
+        
     }
 
     leave() {
